@@ -1,0 +1,11 @@
+notebook
+numpy
+scipy
+scikit-learn
+pandas
+matplotlib
+ipykernel
+common
+ipywidgets
+scikit-image
+sortedcontainers
