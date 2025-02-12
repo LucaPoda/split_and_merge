@@ -1,0 +1,12 @@
+name: split_and_merge
+channels:
+  - conda-forge
+dependencies:
+  - pip
+  - python=3.12.5
+  - opencv=4.10.0
+  - jupyter
+  - ipykernel
+  - numpy
+  - matplotlib
+  - sortedcontainers

@@ -9,38 +9,30 @@ from utils.lib import save_image
 
 images = [
     "images/landscape1.jpeg", 
-    "images/landscape2.jpeg", 
-    "images/landscape3.jpeg",  
-    "images/laurea.jpeg", 
-    "images/ruffo.jpeg", 
-    "images/gigi.jpeg", 
-    "images/moto.jpeg", 
     "images/peperoni.png"
 ]
 
 split_thresholds = [
-    200,
-    250, 
-    300, 
-    350
+    250,
 ]
 
 split_depths = [
-    6, 
-    5
+    6,
+    7
 ]
 
 merge_thresholds = [
-    12500000,
-    10000000,
-    7500000,
-    5000000
+    1000000,
+    800000,
+    600000,
+    400000
 ]
 
 for image_path in images:
     for split_depth in split_depths:
         for split_threshold in split_thresholds: 
             for merge_threshold in merge_thresholds:
+                print(f"Processing {image_path} with split_depth={split_depth}, split_threshold={split_threshold}, merge_threshold={merge_threshold}")
 
                 input_image = cv2.imread(image_path)
 

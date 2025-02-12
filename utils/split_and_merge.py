@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from sortedcontainers import SortedDict
+from itertools import chain
 
 class Region:
     def __init__(self, x, y, width, height):
@@ -127,6 +128,7 @@ class Region:
         """ 
         return f"Region(x={self.x}, y={self.y}, width={self.width}, height={self.height}, subregions={len(self.subregions)})"
 
+
 class SortedListWithCosts:
     def __init__(self):
         self.sorted_dict = SortedDict()
@@ -159,7 +161,7 @@ class SortedListWithCosts:
     def refresh(self, link: "Link"):
       
         done = set()
-        for l in link.region_a.get_root().links + link.region_b.get_root().links:
+        for l in chain(link.region_a.get_root().links, link.region_b.get_root().links):
             if l.id in done:
                 continue
             if l.region_a.get_root() == l.region_b.get_root():
@@ -175,6 +177,7 @@ class SortedListWithCosts:
         return lowest_node
     def __repr__(self):
         return str([f"(Cost: {key[0]}, ID: {key[1]})" for key in self.sorted_dict.keys()])
+
 
 class Node: 
     class TreeIterator:
@@ -226,23 +229,23 @@ class Node:
     
     def __repr__(self):
         return str.join("-", [str(r.id) for r in self])
-        
+
+
 class ParentNode(Node): 
     def __init__(self, child_a: "Node", child_b: "Node"):
         super().__init__()
         self.child_a: Node = child_a
         self.child_b: Node = child_b
-        self.links = child_a.links
-        self.links.extend(child_b.links)
+        self.child_a.set_parent(self)
+        self.child_b.set_parent(self)
 
+        self.links = chain(child_a.links, child_b.links)
         self.size = self.child_a.size + self.child_b.size
 
         self.n = self.child_a.n + self.child_b.n
         self.value = child_a.value + child_b.value
         self.mean = self.value / self.n
 
-        self.child_a.set_parent(self)
-        self.child_b.set_parent(self)
 
     def get_stats(self) -> float:
         if self.n != None and self.mean != None and self.variance != None:
@@ -332,6 +335,7 @@ class ParentNode(Node):
 
         return mask
 
+
 class Leaf(Node):
     def __init__(self, region: Region, i):
         super().__init__()
@@ -371,6 +375,7 @@ class Leaf(Node):
 
     def add_link(self, link: "Link"):
         self.links.append(link)
+
 
 class Link:
     n_links = 0
@@ -448,6 +453,7 @@ class Link:
             return self.get_cost() > other.get_cost()
         return NotImplemented
 
+
 class RAG: 
     def __init__(self, regions: list[Region]):
         self.links : SortedListWithCosts = SortedListWithCosts()
@@ -479,7 +485,7 @@ class RAG:
         result = []
 
         while not self.links.is_empty():
-            merge_threshold = alpha / link.get_size()
+            merge_threshold = alpha / (link.get_size())
             
             # print(f"{link.variance/merge_threshold*100} - {link.variance} < {merge_threshold} - {link.cost} - {link.size}")
 
@@ -493,6 +499,7 @@ class RAG:
                 link = self.links.get_lowest_cost_link()
 
         return RAG.get_all_regions(result)
+
 
 def split(image: cv2.typing.MatLike, region: Region, threshold: int, max_depth=10, depth=0):
     """
@@ -524,9 +531,11 @@ def split(image: cv2.typing.MatLike, region: Region, threshold: int, max_depth=1
 
     return homogeneous_regions
 
+
 def merge(regions: list[Region], threshold):
     rag = RAG(regions)
     return rag.merge(threshold)
+
 
 def split_and_merge(input_image: cv2.typing.MatLike, split_depth: int = 6, split_threshold: float = 250, merge_threshold: float = 6000000):
     initial_region = Region(0, 0, input_image.shape[1], input_image.shape[0])

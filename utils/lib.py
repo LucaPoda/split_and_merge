@@ -124,7 +124,7 @@ def save_image(image, image_path, split_depth, split_threshold, merge_threshold,
 
 
 
-def plot_previous_runs():
+def plot_previous_runs(a):
     import os
     import re
     import matplotlib.pyplot as plt
@@ -189,8 +189,8 @@ def plot_previous_runs():
     # Set column titles for parameters (properly centered)
     for col_idx, col_key in enumerate(column_keys):
         param_label = f"({col_key[0]}, {col_key[1]}, {col_key[2]})"
-        col_x_pos = (col_idx + 1) / num_cols  # Adjusted to fit exactly above each column
-        fig.text(0.1 + col_x_pos, 0.98, param_label, ha="center", fontsize=12, fontweight="bold")
+        col_x_pos = (col_idx) / num_cols  # Adjusted to fit exactly above each column
+        fig.text(a + col_x_pos, 0.98, param_label, ha="center", fontsize=12, fontweight="bold")
 
     # General layout adjustments
     plt.tight_layout()
