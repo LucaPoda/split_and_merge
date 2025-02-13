@@ -487,8 +487,6 @@ class RAG:
         while not self.links.is_empty():
             merge_threshold = alpha / (link.get_size())
             
-            # print(f"{link.variance/merge_threshold*100} - {link.variance} < {merge_threshold} - {link.cost} - {link.size}")
-
             if link.variance > merge_threshold:
                 result.append(link)
             else:
